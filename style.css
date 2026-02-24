@@ -1,0 +1,468 @@
+/*
+  现代、清爽、极简风（偏 Notion / Obsidian）
+  - 柔和背景与易读字体
+  - 桌面：左列表右编辑
+  - 手机：上下堆叠
+*/
+
+:root {
+  /* 颜色：柔和、低对比但可读 */
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --panel-2: #fbfbfd;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: rgba(17, 24, 39, 0.10);
+  --border-2: rgba(17, 24, 39, 0.14);
+  --hover: rgba(99, 102, 241, 0.10);
+  --focus: rgba(99, 102, 241, 0.40);
+  --primary: #4f46e5;
+
+  /* 尺寸与圆角 */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+  --shadow-sm: 0 6px 16px rgba(17, 24, 39, 0.08);
+
+  /* 顶部栏高度（用于计算主体高度） */
+  --topbar-h: 56px;
+}
+
+/* 更舒服的盒模型 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(1200px 800px at 20% -10%, #eef2ff 0%, transparent 60%),
+    radial-gradient(900px 600px at 120% 10%, #ecfeff 0%, transparent 55%),
+    var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
+    "Noto Sans SC", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ========== 顶部导航栏 ========== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: var(--topbar-h);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar__nav {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.topbar__brand {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 顶部右侧登录区域 */
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.auth__input {
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.85);
+  outline: none;
+}
+
+.auth__input:focus {
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.auth__btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-2);
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.auth__btn--login {
+  border-color: rgba(79, 70, 229, 0.4);
+  background: rgba(79, 70, 229, 0.12);
+}
+
+.auth__btn--login:hover {
+  background: rgba(79, 70, 229, 0.18);
+}
+
+.auth__btn--register:hover {
+  background: rgba(17, 24, 39, 0.06);
+}
+
+.auth__btn--logout {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.10);
+}
+
+.auth__btn--logout:hover {
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.auth__status {
+  max-width: 160px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========== 主体布局（桌面：左右两栏） ========== */
+.app {
+  max-width: 1200px;
+  margin: 16px auto;
+  padding: 0 16px 16px;
+
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+
+  /* 修改：使用 height 而不是 min-height，强制固定高度 */
+  height: calc(100vh - var(--topbar-h) - 32px);
+  /* 新增：防止整个页面出现滚动条 */
+  overflow: hidden; 
+}
+
+.sidebar,
+.editor {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* 让圆角内滚动更干净 */
+}
+
+/* ========== 左侧：列表与滚动 ========== */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* 重要：允许子元素在 grid 内正确滚动 */
+}
+
+.sidebar__toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to bottom, var(--panel), var(--panel-2));
+}
+
+.sidebar__search {
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0 12px;
+  outline: none;
+}
+
+.sidebar__search:focus {
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 0 0 4px var(--focus);
+}
+
+.sidebar__new {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  background: rgba(79, 70, 229, 0.10);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 650;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.sidebar__new:hover {
+  background: rgba(79, 70, 229, 0.14);
+  border-color: rgba(79, 70, 229, 0.35);
+}
+
+.notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  /* 修改：添加 flex: 1 确保它占满 sidebar 剩余空间 */
+  flex: 1; 
+  /* 核心：左侧列表可滚动 */
+  overflow-y: auto; /* 明确指定 Y 轴滚动 */
+  min-height: 0;
+}
+
+/* 分隔线：每条笔记之间一条细线 */
+.notes__item + .notes__item {
+  border-top: 1px solid var(--border);
+}
+
+.notes__button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 12px 14px;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+}
+
+/* 悬停变色（轻微） */
+.notes__button:hover {
+  background: var(--hover);
+}
+
+.notes__button:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(79, 70, 229, 0.45);
+}
+
+.notes__title {
+  font-weight: 650;
+  font-size: 14px;
+}
+
+.notes__meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ========== 右侧：编辑 / 显示区域 ========== */
+.editor {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  min-height: 0;
+}
+
+/* 右侧顶部：导入工具条 */
+.editor__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to bottom, var(--panel), var(--panel-2));
+}
+
+.editor__import {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  background: rgba(79, 70, 229, 0.10);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.editor__import:hover {
+  background: rgba(79, 70, 229, 0.14);
+  border-color: rgba(79, 70, 229, 0.35);
+}
+
+.editor__import:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus);
+}
+
+.editor__import-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.editor__status {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 右侧内容“看起来不拥挤”的关键：足够的内边距 + 合理间距 */
+.editor__form {
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to bottom, var(--panel), var(--panel-2));
+}
+
+.editor__label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 10px 0 6px;
+}
+
+.editor__title,
+.editor__content {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.editor__title:focus,
+.editor__content:focus {
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 0 0 4px var(--focus);
+}
+
+.editor__content {
+  resize: vertical;
+  min-height: 200px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  line-height: 1.55;
+}
+
+.editor__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.editor__save,
+.editor__delete {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-2);
+  background: #fff;
+  cursor: pointer;
+}
+
+.editor__save {
+  border-color: rgba(79, 70, 229, 0.25);
+  background: rgba(79, 70, 229, 0.10);
+}
+
+.editor__save:hover {
+  background: rgba(79, 70, 229, 0.14);
+  border-color: rgba(79, 70, 229, 0.35);
+}
+
+.editor__delete:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.preview {
+  padding: 18px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.preview__title {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.preview__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ========== 响应式：手机端上下堆叠 ========== */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 12px auto;
+    min-height: calc(100vh - var(--topbar-h) - 24px);
+  }
+
+  /* 手机端：左侧列表不要占满全屏，给它一个舒适的高度并可滚动 */
+  .sidebar {
+    max-height: 42vh;
+  }
+}
+
+/* 小屏更紧凑一点 */
+@media (max-width: 420px) {
+  .topbar__nav {
+    padding: 0 12px;
+  }
+
+  .auth__status {
+    display: none;
+  }
+
+  .auth__input {
+    width: 120px;
+  }
+
+  .app {
+    padding: 0 12px 12px;
+  }
+
+  .sidebar__toolbar,
+  .editor__form,
+  .preview {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}

@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <!--
+      head：页面“元信息”区域
+      - 这里放编码、视口、标题、以及 CSS/字体等资源引用
+      - head 里的内容不会直接显示在页面主体中
+    -->
+    <meta charset="utf-8" />
+
+    <!--
+      viewport：让页面在手机/平板上按设备宽度正确缩放
+      - 新手常见问题：如果没有它，移动端可能会被“缩小”显示
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- 浏览器标签页标题 -->
+    <title>我的个人笔记</title>
+
+    <!--
+      外部样式表（可选但推荐）
+      - 你后续可以在 style.css 里写布局（左右两栏）、颜色、字体等
+      - 现在先保留引用，让结构更完整
+    -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <!--
+      顶部导航栏（header + nav）
+      - header：语义上表示页面顶部区域
+      - nav：语义上表示导航区域（哪怕只有网站名称，也属于导航的一部分）
+    -->
+    <header class="topbar">
+      <nav class="topbar__nav" aria-label="顶部导航">
+        <div class="topbar__left">
+          <!--
+            网站名称/Logo 区域
+            - 用 a 标签是为了未来你可以点击返回“首页”
+            - href="#" 暂时只是占位；后续可以改成真正的链接
+          -->
+          <a class="topbar__brand" href="#" aria-label="返回首页">
+            我的个人笔记
+          </a>
+        </div>
+
+        <!--
+          顶部右侧：账号登录区域（简易版）
+          - 支持：邮箱+密码 登录 / 注册 / 退出
+          - 所有逻辑在 script.js 中通过 Firebase Auth 实现
+        -->
+        <div class="auth" aria-label="账号登录区域">
+          <input
+            class="auth__input auth__input--email"
+            type="email"
+            placeholder="邮箱"
+            aria-label="登录邮箱"
+            autocomplete="email"
+          />
+          <input
+            class="auth__input auth__input--password"
+            type="password"
+            placeholder="密码"
+            aria-label="登录密码"
+            autocomplete="current-password"
+          />
+          <button class="auth__btn auth__btn--login" type="button">登录</button>
+          <button class="auth__btn auth__btn--register" type="button">注册</button>
+          <button class="auth__btn auth__btn--logout" type="button" hidden>退出</button>
+          <span class="auth__status" aria-live="polite"></span>
+        </div>
+      </nav>
+    </header>
+
+    <!--
+      主体区域（main）
+      - main：语义上表示页面最核心的内容区域
+      - 下面我们做一个“两栏布局”：
+        - 左侧：笔记列表（aside）
+        - 右侧：笔记编辑/显示（section）
+    -->
+    <main class="app" aria-label="笔记应用主体">
+      <!--
+        左侧笔记列表（aside）
+        - aside：语义上表示“侧边栏”内容
+        - 这里通常放：笔记搜索、笔记列表、新建按钮等
+      -->
+      <aside class="sidebar" aria-label="笔记列表区域">
+        <!--
+          工具栏：放搜索框、新建笔记按钮等
+          - 现在先给一个基础结构，后续可用 JS 绑定事件
+        -->
+        <div class="sidebar__toolbar">
+          <!--
+            搜索框
+            - input[type="search"]：更符合“搜索”语义，部分浏览器会提供清除按钮
+            - placeholder：提示用户可以输入什么
+          -->
+          <input
+            class="sidebar__search"
+            type="search"
+            placeholder="搜索笔记标题..."
+            aria-label="搜索笔记"
+          />
+
+          <!--
+            新建笔记按钮
+            - type="button"：避免在未来放进 form 时触发提交
+          -->
+          <button class="sidebar__new" type="button">
+            新建
+          </button>
+        </div>
+
+        <!--
+          笔记列表（ul/li）
+          - ul：无序列表，适合呈现一组同类条目（笔记）
+          - 每个 li：一个笔记条目
+          - button：让条目可点击，且更易做键盘无障碍操作
+        -->
+        <ul class="notes" aria-label="笔记列表">
+          <li class="notes__item">
+            <button class="notes__button" type="button">
+              <div class="notes__title">欢迎使用</div>
+              <div class="notes__meta">示例笔记 · 刚刚</div>
+            </button>
+          </li>
+          <li class="notes__item">
+            <button class="notes__button" type="button">
+              <div class="notes__title">待办清单</div>
+              <div class="notes__meta">示例笔记 · 今天</div>
+            </button>
+          </li>
+          <li class="notes__item">
+            <button class="notes__button" type="button">
+              <div class="notes__title">学习笔记</div>
+              <div class="notes__meta">示例笔记 · 昨天</div>
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      <!--
+        右侧编辑/显示区域（section）
+        - section：语义上表示一个独立内容区块
+        - 这里我们拆成两部分：
+          1) 编辑区：输入标题、正文（textarea）
+          2) 显示区：预览/阅读（article）
+      -->
+      <section class="editor" aria-label="笔记编辑与显示区域">
+        <!--
+          右侧顶部工具条
+          - 需求：在显示区域最上方添加“导入笔记”按钮与说明文字
+          - 后续你可以在 script.js 里为按钮绑定上传/解析逻辑
+        -->
+        <div class="editor__header" aria-label="导入工具条">
+          <button class="editor__import" type="button">导入笔记</button>
+          <span class="editor__import-hint">
+            支持 Markdown, PDF, Word, 图片等格式
+          </span>
+          <span class="editor__status" aria-live="polite">
+            <!-- 操作状态提示，例如：已保存 / 导入成功 等 -->
+          </span>
+        </div>
+
+        <!--
+          编辑表单（form）
+          - form 不是必须的，但用它可以更规范地组织“可提交的数据”
+          - 这里先不写 action，避免刷新页面；后续可用 JS 接管提交
+        -->
+        <form class="editor__form" autocomplete="off">
+          <!--
+            笔记标题输入框
+            - label：给输入框提供可访问的文本描述（对屏幕阅读器很重要）
+            - for + id 绑定：点击 label 会聚焦到输入框
+          -->
+          <label class="editor__label" for="note-title">标题</label>
+          <input
+            class="editor__title"
+            id="note-title"
+            name="title"
+            type="text"
+            placeholder="例如：今天的想法"
+          />
+
+          <!--
+            笔记正文输入区域
+            - textarea 适合多行文本
+            - rows 只是一个初始高度建议；最终高度一般由 CSS 决定
+          -->
+          <label class="editor__label" for="note-content">内容</label>
+          <textarea
+            class="editor__content"
+            id="note-content"
+            name="content"
+            rows="12"
+            placeholder="在这里写下你的笔记内容..."
+          ></textarea>
+
+          <!--
+            操作按钮区：保存、删除等
+            - 先放占位按钮，后续用 JS 绑定逻辑（存到 localStorage/后端等）
+          -->
+          <div class="editor__actions">
+            <button class="editor__save" type="button">保存</button>
+            <button class="editor__delete" type="button">删除</button>
+          </div>
+        </form>
+
+        <!--
+          显示/预览区（article）
+          - article：语义上表示一篇独立内容（很适合“当前选中的笔记”）
+          - 后续你可以用 JS 把输入内容同步渲染到这里，做“实时预览”
+        -->
+        <article class="preview" aria-label="笔记预览">
+          <h2 class="preview__title">预览区域</h2>
+          <p class="preview__hint">
+            这里可以显示当前选中的笔记内容，或把左侧选中的笔记加载出来。
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <!--
+      外部脚本（可选但推荐）
+      - defer：让脚本在 HTML 解析完成后执行，避免阻塞页面渲染
+      - 你后续可以在 script.js 里实现：
+        - 新建/选择笔记
+        - 保存到 localStorage
+        - 搜索过滤
+        - 预览同步等
+    -->
+    <!--
+      使用 ES Module 方式加载脚本
+      - 方便在 script.js 中直接使用 import 引入 Firebase SDK
+    -->
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
