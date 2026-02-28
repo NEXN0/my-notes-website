@@ -444,7 +444,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     unsubscribeNotes = subscribeNotes(user.uid);
   } else {
-    renderNotesMessage("请先登录以加载你的云端笔记。");
+    renderNotesMessage("请先登录以加载你的云端笔记...");
     resetEditorToNewNote();
   }
 });
